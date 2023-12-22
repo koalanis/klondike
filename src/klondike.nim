@@ -1,18 +1,18 @@
 import strutils, sequtils
 import std/os
-
+import json
+import std/options
 
 type 
   Suit = enum
-    Heart, Spade, Diamonds, Clovers
-  Face = range[0..13]
+    Heart, Spade, Diamonds, Clubs
+  Face = range[0..12]
   Card = tuple[suit: Suit, face: Face]
-
-
-type
-  KlondikeState = tuple
+  KlondikeState = object
     deck: seq[Card]
+    
     pile: seq[Card]
+
     tableauOne: seq[Card]
     tableauTwo: seq[Card]
     tableauThree: seq[Card]
@@ -27,29 +27,79 @@ type
     foundationFour: seq[Card]
 
 
+proc toKlondikeState(data: string): KlondikeState = 
+
+  try:
+    var json = parseJson(data)
+    var state = KlondikeState(
+      deck: @[],
+      pile: @[],
+      tableauOne: @[],
+      tableauTwo: @[],
+      tableauThree: @[],
+      tableauFour: @[],
+      tableauFive: @[],
+      tableauSix: @[],
+      tableauSeven: @[],
+      foundationOne: @[], 
+      foundationTwo: @[], 
+      foundationThree: @[], 
+      foundationFour: @[], 
+    )
+  except:
+    discard
+
+  return state
+
+
+proc getUtfCardFace(card: Card): string =
+  let(suit, face) = card
+  let suitList = 
+    case suit
+      of Heart:
+        ["🂱","🂲","🂳","🂴","🂵","🂶","🂷","🂸","🂹","🂺","🂻","🂽","🂾"]
+      of Spade:
+        ["🂡","🂢","🂣","🂤","🂥","🂦","🂧","🂨","🂩","🂪","🂫","🂭","🂮"]
+      of Diamonds:
+        ["🃁","🃂","🃃","🃄","🃅","🃆","🃇","🃈","🃉","🃊","🃋","🃍","🃎"]
+      of Clubs:
+        ["🃑","🃒","🃓","🃔","🃕","🃖","🃗","🃘","🃙","🃚","🃛","🃝","🃞"]
+  return suitList[face]
+
 proc getRandomDeck(): seq[Card] =
   var deck: seq[Card] = @[]
   for kind in Suit:
-    for i in 0..13:
+    for i in Face.low..Face.high:
       let c = (kind, Face(i))
       deck.add(c)
-  
   
   return deck
 
 proc help() =
   echo "klondike - a simple solitaire by koalanis"
   echo "-----------------"
-  echo ""
+
+proc showBoard() = 
+  discard map(getRandomDeck(), getUtfCardFace)
+
+proc gameFileExists(): bool = 
+  let filePath = ".klondike_game"
+  return fileExists(filePath)
+
+proc init() =
+  echo "creating game..."
+  let game: KlondikeState = KlondikeState(deck: getRandomDeck())
+
+proc packup() =
+  echo "packing up game..."
 
 proc check() =
-  let filePath = ".klondike_game"
-
-  if fileExists(filePath):
-    echo "The file exists.  "
-    echo "🃁"
+  help()
+  if gameFileExists():
+    echo "game file found!"
+    showBoard()
   else:
-    echo "The file does not exist. U+1F0A1"
+    echo "no game file found :("
 
 proc main() =
   let s = commandLineParams()
@@ -59,15 +109,18 @@ proc main() =
   
   let cmd = s[0]
   let params = s[1..len(s)-1]
-  let c: Card = (Heart, Face(0))
-  echo params
-  echo c
-  echo getRandomDeck()
+
   if cmd == "help":
     help()
     return
   elif cmd == "check":
     check()
+    return
+  elif cmd == "init":
+    init()
+    return
+  elif cmd == "packup":
+    packup()
     return
 
 when isMainModule:
