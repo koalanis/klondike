@@ -1,11 +1,11 @@
 import strutils, sequtils
 import std/os
-import json
+import marshal
 import std/options
 
 type 
   Suit = enum
-    Heart, Spade, Diamonds, Clubs
+    Hearts = "Hearts", Spades = "Spades", Diamonds = "Diamonds", Clubs = "Clubs"
   Face = range[0..12]
   Card = tuple[suit: Suit, face: Face]
   KlondikeState = object
@@ -26,12 +26,8 @@ type
     foundationThree: seq[Card]
     foundationFour: seq[Card]
 
-
-proc toKlondikeState(data: string): KlondikeState = 
-
-  try:
-    var json = parseJson(data)
-    var state = KlondikeState(
+proc emptyKlondikeState(): KlondikeState =
+  KlondikeState(
       deck: @[],
       pile: @[],
       tableauOne: @[],
@@ -46,19 +42,14 @@ proc toKlondikeState(data: string): KlondikeState =
       foundationThree: @[], 
       foundationFour: @[], 
     )
-  except:
-    discard
-
-  return state
-
 
 proc getUtfCardFace(card: Card): string =
   let(suit, face) = card
   let suitList = 
     case suit
-      of Heart:
+      of Hearts:
         ["🂱","🂲","🂳","🂴","🂵","🂶","🂷","🂸","🂹","🂺","🂻","🂽","🂾"]
-      of Spade:
+      of Spades:
         ["🂡","🂢","🂣","🂤","🂥","🂦","🂧","🂨","🂩","🂪","🂫","🂭","🂮"]
       of Diamonds:
         ["🃁","🃂","🃃","🃄","🃅","🃆","🃇","🃈","🃉","🃊","🃋","🃍","🃎"]
@@ -79,8 +70,19 @@ proc help() =
   echo "klondike - a simple solitaire by koalanis"
   echo "-----------------"
 
+proc getSavedState(): KlondikeState =
+  let f = open(".klondike_game")
+  defer: f.close()
+
+  let data = f.readAll()
+  return data.to[:KlondikeState]
+
 proc showBoard() = 
-  discard map(getRandomDeck(), getUtfCardFace)
+  let state = getSavedState()
+  var acc = ""
+  for i in state.deck:
+    acc = acc & getUtfCardFace(i)
+  echo acc
 
 proc gameFileExists(): bool = 
   let filePath = ".klondike_game"
@@ -89,6 +91,7 @@ proc gameFileExists(): bool =
 proc init() =
   echo "creating game..."
   let game: KlondikeState = KlondikeState(deck: getRandomDeck())
+  writeFile(".klondike_game", $$game)
 
 proc packup() =
   echo "packing up game..."
