@@ -2,6 +2,8 @@ import strutils, sequtils
 import std/os
 import marshal
 import std/options, std/strformat
+import std/random
+
 
 type 
   Suit = enum
@@ -69,7 +71,7 @@ proc getRandomDeck(): seq[Card] =
     for i in Face.low..Face.high:
       let c = Card(suit: kind, face: i, flip: false)
       deck.add(c)
-  
+  shuffle(deck)
   return deck
 
 proc help() =
@@ -121,6 +123,10 @@ proc showBoard() =
   var foundationFour = getCardStackString(state.foundationFour);
   echo fmt"foundationFour = {foundationFour}"
 
+  let pile = getCardStackString(state.pile)
+  echo ""
+  echo fmt"pile = {pile}"
+
 proc gameFileExists(): bool = 
   let filePath = ".klondike_game"
   return fileExists(filePath)
@@ -132,7 +138,7 @@ proc init() =
   echo "creating game..."
   let game: KlondikeState = KlondikeState(deck: getRandomDeck())
   saveGameFile(game) 
-
+ 
 proc packup() =
   echo "You pack up your cards."
   echo "TODO: delete game file"
@@ -151,7 +157,30 @@ proc start() =
     echo "ok starting game"
     var state = getSavedState()
     state.playing = true
-    writeFile(".klondike_game", $$state)
+    
+    var i = 0
+    while state.deck.len() > 0:
+      let item  = state.deck[0]
+      state.deck.delete(0)
+      if i == 0:
+        state.tableauOne.add(item)
+      elif i <= (0+2):
+        state.tableauTwo.add(item)
+      elif i <= (0+2+3):
+        state.tableauThree.add(item)
+      elif i <= (0+2+3+4):
+        state.tableauFour.add(item)
+      elif i <= (0+2+3+4+5):
+        state.tableauFive.add(item)
+      elif i <= (0+2+3+4+5+6):
+        state.tableauSix.add(item)
+      elif i <= (0+2+3+4+5+6+7):
+        state.tableauSeven.add(item)
+      else:
+        state.pile.add(item)
+      i += 1
+
+    saveGameFile(state)
   else:
     echo "no game file found :("
 
