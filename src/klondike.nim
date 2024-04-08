@@ -3,6 +3,8 @@ import std/os
 import marshal
 import std/options, std/strformat
 import std/random
+import ncurses
+
 
 
 type 
@@ -208,7 +210,20 @@ proc main() =
   elif cmd == "start":
     start()
     return
+  elif cmd == "play":
+    var 
+      mesg = "Enter a string: "
+      row: cint
+      col: cint
 
+    let pwin = initscr()
+    getmaxyx(pwin, row, col)
+    mvprintw(row div 2, (cint)((col - mesg.len) div 2), "%s", mesg)
+    getstr(mesg)
+    mvprintw(row - 2, 0, "You Entered: %s", mesg)
+    getch()
+    endwin()
+    return 
 
 # kind of like python
 when isMainModule:

@@ -12,3 +12,4 @@ bin           = @["klondike"]
 # Dependencies
 
 requires "nim >= 1.0.6"
+requires "ncurses"
