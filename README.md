@@ -30,4 +30,4 @@ nimble build
 ## roadmap
 - [ ] CLI complete
 - [ ] ncurses interactive mode
-= [ ] graphics expansion
+- [ ] graphics expansion
