@@ -4,6 +4,23 @@ a simple terminal soilitare
 written in nim
 
 ```
+=======================================
+            _    .  ,   .           .
+        *  / \_ *  / \_      _  *         
+         /    \  /    \,   ((        .    
+    .   /\/\  /\/ :' __ \_  `  ))  *    
+       /    \/  \  _/ ^  \  ))      *   
+     /\/\  /\/\:~      \ |\  *       
+    /    \/    --  __   \| \/ \  
+   /\/\  /\/\   /  \  | / \/   \
+  /    \/    \  /    ||    \   /\
+/\/\  /\/\  /\/\  /\/  /\  /\ /  \
+=======================================
+```
+
+## how to play
+
+```
 ============================
 [Q♤]|24
 
@@ -28,6 +45,6 @@ nimble build
 ```
 
 ## roadmap
-- [ ] CLI complete
+- [x] shell interactive mode
 - [ ] ncurses interactive mode
 - [ ] graphics expansion
