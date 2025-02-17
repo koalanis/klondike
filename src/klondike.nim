@@ -534,7 +534,7 @@ proc drawPile(state: KlondikeState, short = false, simple = false): void =
       else:
         $l
 
-    echo str
+    echo fmt"p|{str}"
 
 proc drawFoundations(state: KlondikeState, simple = false): void =
   let foundations = [state.foundationOne, state.foundationTwo, state.foundationThree, state.foundationFour]
