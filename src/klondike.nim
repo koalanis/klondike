@@ -13,7 +13,7 @@ randomize()
 const PLAYING_CARD_BACK = "🂠"
 
 const DEBUG: bool = true
-const DRAW_SIMPLE = true
+const DRAW_SIMPLE = false 
 
 proc log*(s: string) = 
   if DEBUG:
@@ -67,6 +67,8 @@ type
     n: int
     m: int
 
+proc echoPileCmdHelp() = 
+  echo "pile help"
 
 type
   MoveOutcome = enum
@@ -868,6 +870,8 @@ proc iterateThroughPile(state: var KlondikeState): void =
 
 
 proc resetPile(state: var KlondikeState): void = 
+  
+  # flip all cards in pile to false
   for i in 0..(len(state.pile) - 1) :
     state.pile[i].flip = false
 
@@ -876,6 +880,8 @@ proc pileCmd*(cmd: string = ""): void =
   if game.isSome:
     var state = game.get()
     case cmd:
+    of "help":
+      echoPileCmdHelp()
     of "reset":
       resetPile(state)
     of "next":
